@@ -1,8 +1,8 @@
 Robot
 =====
-This repository contains source code for a blue tooth controlled robot. The robot uses the [CamJam Edukit3](https://camjam.me/?page_id=1035) components and the software is inspired by the [tutorials](https://github.com/CamJam-EduKit/EduKit3/tree/master/CamJam%20Edukit%203%20-%20GPIO%20Zero) for the kit. This project is a learning vehicle for me to learn about and improve my Python, Raspberry Pi, Electronics and Robotics skills. 
+This repository contains source code for a bluetooth controlled robot. The robot uses the [CamJam Edukit3](https://camjam.me/?page_id=1035) components and the software is inspired by the [tutorials](https://github.com/CamJam-EduKit/EduKit3/tree/master/CamJam%20Edukit%203%20-%20GPIO%20Zero) for the kit. This project is a learning vehicle for me to learn about and improve my Python, Raspberry Pi, Electronics and Robotics skills. 
 
-In addition to the CamJam kit this project also uses an [8BitDo Zero 2](https://www.8bitdo.com/zero2/) blue tooth controller to control the robot.
+In addition to the CamJam kit this project also uses an [8BitDo Zero 2](https://www.8bitdo.com/zero2/) bluetooth controller to control the robot.
 
 Health Warning
 ==============
