@@ -45,13 +45,11 @@ Features and functionality are limited at the moment for obvious reasons - its n
 * When running (and the controller is disconnected)
   - It terminates gracefully when CTRL-C is pressed
 
+* When running (and the controller is connected).
+  - It ignores when CTRL-C is pressed.
+
 * On reconnection.
   - It resumes printing keypad events.
-
-
-* When running.
-  - It terminates gracefully when CTRL-C is pressed.
-
 
 * When run without a device id.
   - It prints usage help to the console.
