@@ -19,7 +19,7 @@ The EventSource class provides the same functionality as the device_events funct
 
 Both modules encapsulate code that maintains the connection to the Bluetooth controller and returns a stream of events. Each leverages the libevdev library to return a stream of events from the controller. The events that are returned are the direct output from the libevdev library, so as yet there is no translation layer to convert the events to commands: Forward, Left, Right, Back, Stop, etc.
 
-The focus of the development moves to the new EventSource class 
+The focus of the development moves to the new EventSource class. 
 
 Features (as demonstrated by main.py)
 --------
