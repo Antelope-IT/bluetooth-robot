@@ -6,7 +6,7 @@ In addition to the CamJam kit this project also uses an [8BitDo Zero 2](https://
 
 Health Warning
 ==============
-Please be aware that this project is still a work in progress and is incomplete - this is just the first commit. As such, its not finished and therefore not fully implemented, and what code there is here probably doesn't all work. Worse than that I'm just learning Python so I'm not even an expert. That all said, you are welcome to use this code, borrow from it, and to learn from my mistakes, however I make no guarantees as to its functionality or suitability. You can't say I didn't warn you.
+Please be aware that this project is still a work in progress and is incomplete - these are just first commits. As such, its not finished and therefore not fully implemented, and what code there is here probably doesn't all work. Worse than that I'm just learning Python so I'm not even an expert. That all said, you are welcome to use this code, borrow from it, and to learn from my mistakes, however I make no guarantees as to its functionality or suitability. You can't say I didn't warn you.
 
 Status
 ======
