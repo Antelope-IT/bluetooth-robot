@@ -33,7 +33,7 @@ def event_printer(args):
 
 def main(args):
     path = args[1]
-    robot = Robot(left=(9, 10), right=(7, 8))
+    robot = Robot(left=(10, 9), right=(8, 7))
     rc = RobotControl(path)
     robot.source = rc()
     pause()

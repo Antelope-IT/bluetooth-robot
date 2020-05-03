@@ -39,33 +39,36 @@ class RobotControl:
         self.speed = 0
         self.heading = 0
         self.bias = bias
-        self.bias_adjust = 1 / 256
-        self.sensitivity = 1 / 256
-        self.slow = 1 / 4
+        self.bias_adjust = 1 / 32
+        self.sensitivity = 1 / 16
+        self.slow = 1 / 8
         self.left = False
         self.right = False
         self.forward = False
         self.reverse = False
 
     def __call__(self, *args, **kwargs):
-        if self.eventSource.is_connected:
-            try:
-                ev = next(self.eventSource.events())
-                if ev is not None:
-                    command = self._decode_event(ev)
-                    self._update_state(command)
-                else:
-                    command = Command(self.forward, self.reverse, self.left, self.right)
-                    self._update_state(command)
-            except KeyboardInterrupt:
-                pass
-            except Exception as ex:
-                print(f"{type(ex)}: {ex}")
+        while True:
+            if self.eventSource.is_connected:
+                try:
+                    ev = next(self.eventSource.events())
+                    if ev is not None:
+                        command = self._decode_event(ev)
+                        self._update_state(command)
+                    else:
+                        command = Command(self.forward, self.reverse, self.left, self.right)
+                        self._update_state(command)
+                except KeyboardInterrupt:
+                    pass
+                except Exception as ex:
+                    print(f"{type(ex)}: {ex}")
+                    self.reset()
+            else:
                 self.reset()
-        else:
-            self.reset()
 
-        yield adjust_bias(*calculate_drive(self.speed, self.heading), self.bias)
+            left, right = adjust_bias(*calculate_drive(self.speed, self.heading), self.bias)
+            print(f'left: {left}, right: {right}')
+            yield left, right
 
     def reset(self):
         self.forward = False
@@ -80,8 +83,8 @@ class RobotControl:
         if command is None:
             self.reset()
         else:
-            speed_increment = abs(self.speed) * self.sensitivity if abs(self.speed) > 0 else self.sensitivity
-            heading_increment = abs(self.heading) * self.sensitivity if abs(self.heading) > 0 else self.sensitivity
+            speed_increment = abs(self.speed) * self.sensitivity if abs(self.speed) > self.sensitivity else self.sensitivity
+            heading_increment = abs(self.heading) * self.sensitivity if abs(self.heading) > self.sensitivity else self.sensitivity
             if command.forward or command.reverse:
                 self.speed += speed_increment if command.forward else 0
                 self.speed -= speed_increment if command.reverse else 0
