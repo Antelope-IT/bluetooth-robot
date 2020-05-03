@@ -15,11 +15,9 @@ The project has now been moved to the [JetBrains pycharm (Community Edition) IDE
 The initial commit had one code file: device_connector.py. This commit has some modifications to the way this module functions with no (intentional) major changes to the functionality. 
 In addition to this module the events module has been added which adds the EventSource class.  
 
-The EventSource class provides the same functionality as the device_events function in the device_connector module but adds the ability to track and query if the device is attached. This new class can be exercised from the main module in the same way as the device_connector module.
+The project has moved on since the original commit adding the ability to interface and control the hardware attached to the pi. The project structure has changed in an attempt to conform to standard practice for python projects this hasn't been entirely successful and further changes and refinements are necessary.
 
-Both modules encapsulate code that maintains the connection to the Bluetooth controller and returns a stream of events. Each leverages the libevdev library to return a stream of events from the controller. The events that are returned are the direct output from the libevdev library, so as yet there is no translation layer to convert the events to commands: Forward, Left, Right, Back, Stop, etc.
-
-The focus of the development moves to the new EventSource class. 
+This version of the code is functional; it is possible to control the robot with the Bluetooth controller. Code quality is low and work is required to improve code quality, the packaging of project and its overall usabilty. 
 
 Features (as demonstrated by main.py)
 --------
@@ -28,28 +26,26 @@ Features and functionality are limited at the moment for obvious reasons - its n
 * When run with a device Id.
   - It waits for the device to connect.
 
-
 * When the device connects.
-  - It prints a series of controller keypad events
-
+  - It prints a device connected message
+  - It updates the control states
 
 * If the device disconnects
   - It handles the disconnection gracefully (no exceptions)
   - It waits to reconnect 
-  - It prints a `Disconnected message` - driven by the EventSource instance is_connected property
+  - It zeroes the control state, stopping the robot
+  - ~It prints a `Disconnected message` - driven by the EventSource instance is_connected property~ TODO: Fix
 
 * On reconnection 
-  - It resumes printing keypad events.
-
+  - It resumes updating the state of the robot control with keypad events from the controller.
 
 * When running (and the controller is disconnected)
-  - It terminates gracefully when CTRL-C is pressed
+  - ~It terminates gracefully when CTRL-C is pressed.~ TODO Fix
 
 * When running (and the controller is connected).
   - It ignores when CTRL-C is pressed.
-
-* On reconnection.
-  - It resumes printing keypad events.
+  - It updates the state of the robot control with keypad events from the controller.
+  - The control state is surfaced as an iterable that can be queried by the GPIZero Robot device
 
 * When run without a device id.
   - It prints usage help to the console.
