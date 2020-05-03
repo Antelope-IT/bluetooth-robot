@@ -65,7 +65,7 @@ class RobotControl:
         else:
             self.reset()
 
-        return adjust_bias(*calculate_drive(self.speed, self.heading), self.bias)
+        yield adjust_bias(*calculate_drive(self.speed, self.heading), self.bias)
 
     def reset(self):
         self.forward = False
