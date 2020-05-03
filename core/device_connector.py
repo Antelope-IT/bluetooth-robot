@@ -11,7 +11,7 @@ import fcntl
 import os
 
 from libevdev import InputEvent
-from utilities import print_event
+from utils.utilities import print_event
 
 
 def device_connector(path, blocking=True):
@@ -35,9 +35,10 @@ def device_connector(path, blocking=True):
             with open(path, "rb") as fd:
                 connected = True
                 print(f"Connected to device {path}.")
-                dev = libevdev.Device(fd)
                 if not blocking:
                     fcntl.fcntl(fd, fcntl.F_SETFL, os.O_NONBLOCK)
+
+                dev = libevdev.Device(fd)
                 yield dev
                 print(f"Finished with device {path}.")
         except KeyboardInterrupt:

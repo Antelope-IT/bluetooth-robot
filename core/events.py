@@ -4,7 +4,7 @@ Ussage:
     None.
 """
 import libevdev
-from device_connector import device_connector
+from core.device_connector import device_connector
 
 
 class EventSource:
@@ -24,7 +24,7 @@ class EventSource:
 
     @property
     def is_connected(self):
-        """Get the connected state of the event source. If not connect attempts to connect."""
+        # Get the connected state of the event source. If not connect attempts to connect.
         while not self._connected:
             try:
                 self._dev = next(self._connector, None)
@@ -41,13 +41,19 @@ class EventSource:
         return self._connected
 
     def events(self):
-        """A generator a function which yields an infinite sequence of InputsEvents
-           from the device as long as it is connected."""
+        """A generator function which yields an infinite sequence of InputsEvents
+           from the device as long as it is connected.
+        """
         try:
             while self.is_connected:
                 try:
                     for e in self._dev.events():
+                        # filter sync events
+                        if e.matches(libevdev.EV_MSC) or e.matches(libevdev.EV_SYN):
+                            continue
                         yield e
+                    if not self._blocking:
+                        yield
                 except libevdev.EventsDroppedException:
                     for e in self._dev.sync():
                         yield e

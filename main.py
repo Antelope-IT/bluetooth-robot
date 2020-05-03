@@ -6,25 +6,36 @@ Usage:
 """
 import sys
 import time
-from events import EventSource
-from utilities import print_event
+from core.robot_control import RobotControl
+from core.events import EventSource
+from utils.utilities import print_event
+from gpiozero import Robot
+from signal import pause
+
+
+def event_printer(args):
+    path = args[1]
+    es = EventSource(path)
+    while True:
+        try:
+            if es.is_connected:
+                e = next(es.events())
+                if e:
+                    print_event(e)
+            else:
+                print('Not Connected')
+                time.sleep(2)
+        except KeyboardInterrupt:
+            return
+        except Exception as ex:
+            print(f"{type(ex)}: {ex}")
 
 
 def main(args):
     path = args[1]
-    es = EventSource(path)
-    try:
-        while True:
-            if es.is_connected:
-                for e in es.events():
-                    print_event(e)
-            else:
-                print('Not Connected')
-                time.sleep(1)
-    except KeyboardInterrupt:
-        return
-    except Exception as ex:
-        print(f"{0}: {1}", type(ex), ex)
+    robot = Robot(left=(9, 10), right=(7, 8))
+    robot.source = RobotControl(path)
+    pause()
 
 
 if __name__ == "__main__":
