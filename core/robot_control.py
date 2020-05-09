@@ -33,9 +33,10 @@ def adjust_bias(left, right, bias):
 
 class RobotControl:
 
-    def __init__(self, path, bias=0, max_speed=1):
+    def __init__(self, path, bias=0, max_speed=1, fwd_sensor=None):
         self.eventSource = EventSource(path)
         self.max_speed = max_speed
+        self.fwd_sensor = fwd_sensor
         self.speed = 0
         self.heading = 0
         self.bias = bias
@@ -58,6 +59,9 @@ class RobotControl:
                     else:
                         command = Command(self.forward, self.reverse, self.left, self.right)
                         self._update_state(command)
+                    safe_fwd = True if self.fwd_sensor is None else self.fwd_sensor.safe()
+                    if self.speed > 0 and not safe_fwd:
+                        self.reset()
                 except KeyboardInterrupt:
                     pass
                 except Exception as ex:
@@ -83,8 +87,10 @@ class RobotControl:
         if command is None:
             self.reset()
         else:
-            speed_increment = abs(self.speed) * self.sensitivity if abs(self.speed) > self.sensitivity else self.sensitivity
-            heading_increment = abs(self.heading) * self.sensitivity if abs(self.heading) > self.sensitivity else self.sensitivity
+            speed_increment = abs(self.speed) * self.sensitivity if abs(
+                self.speed) > self.sensitivity else self.sensitivity
+            heading_increment = abs(self.heading) * self.sensitivity if abs(
+                self.heading) > self.sensitivity else self.sensitivity
             if command.forward or command.reverse:
                 self.speed += speed_increment if command.forward else 0
                 self.speed -= speed_increment if command.reverse else 0
