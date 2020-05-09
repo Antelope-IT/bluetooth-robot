@@ -42,8 +42,8 @@ def main(args):
     onZero = args.zero
     pin_factory = PiGPIOFactory if onZero else NativeFactory()
     proximity = ProximitySensor(pin_factory=pin_factory)
-    robot = Robot(left=(10, 9), right=(8, 7), pin_factory=pin_factory, fwd_sensor=proximity)
-    rc = RobotControl(path)
+    robot = Robot(left=(10, 9), right=(8, 7), pin_factory=pin_factory)
+    rc = RobotControl(path, fwd_sensor=proximity)
     robot.source = rc()
     pause()
 
