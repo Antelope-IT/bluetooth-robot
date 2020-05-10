@@ -36,12 +36,18 @@ def event_printer(config):
 
 
 def main(config):
-    pin_factory = PiGPIOFactory() if config.zero else None
-    proximity = ProximitySensor(pin_factory=pin_factory)
-    robot = Robot(left=(10, 9), right=(8, 7), pin_factory=pin_factory)
-    rc = RobotControl(config.device, fwd_sensor=proximity)
-    robot.source = rc()
-    pause()
+    try:
+        pin_factory = PiGPIOFactory() if config.zero else None
+        proximity = ProximitySensor(safe_distance=10, pin_factory=pin_factory)
+        robot = Robot(left=(10, 9), right=(8, 7), pin_factory=pin_factory)
+        rc = RobotControl(config.device, fwd_sensor=proximity)
+        robot.source = rc()
+        pause()
+    except KeyboardInterrupt:
+        pass
+    except Exception as ex:
+        print(f"{type(ex)}: {ex}")
+        exit(1)
 
 
 if __name__ == "__main__":

@@ -12,12 +12,13 @@ Status
 ======
 The project has now been moved to the [JetBrains pycharm (Community Edition) IDE](https://www.jetbrains.com/pycharm/) essentially for the improved (imho) debugging experience hence the .idea directory - this can be safely ignored it contains no pertinent code.
 
-The initial commit had one code file: device_connector.py. This commit has some modifications to the way this module functions with no (intentional) major changes to the functionality. 
-In addition to this module the events module has been added which adds the EventSource class.  
+The initial commit had one code file: device_connector.py. This commit has some modifications to the way this module functions with no (intentional) major changes to the functionality. In addition to this module the events module has been added which adds the EventSource class.  
 
 The project has moved on since the original commit adding the ability to interface and control the hardware attached to the pi. The project structure has changed in an attempt to conform to standard practice for python projects this hasn't been entirely successful and further changes and refinements are necessary.
 
-This version of the code is functional; it is possible to control the robot with the Bluetooth controller. Code quality is low and work is required to improve code quality, the packaging of project and its overall usabilty. 
+This version of the code is functional; it is possible to control the robot with the Bluetooth controller. The proximity sensor has been added to the project with code to implement an auto-breaking function. This can be best described as experimental 
+
+Code quality is low and work is required to improve code quality, the packaging of project and its overall usability. 
 
 Features (as demonstrated by main.py)
 --------

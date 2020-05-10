@@ -16,10 +16,10 @@ class ProximitySensor:
     """
 
     def __init__(self, safe_distance=5, send=pinTrigger, receive=pinEcho, pin_factory=None):
-        self.sensor = DistanceSensor(echo=receive, trigger=send, max_distance=0.5, pin_factory=pin_factory)
+        self.sensor = DistanceSensor(echo=receive, trigger=send, pin_factory=pin_factory)
         self.limitDistance = safe_distance
 
     def proximity(self):
         # Returns True if the sensors measured distance is greater than the configured safe distance
-        distance = self.sensor.distance * 50
-        return True if distance * 50 > self.limitDistance else False, distance
+        distance = self.sensor.distance
+        return True if distance * 100 > self.limitDistance else False, distance

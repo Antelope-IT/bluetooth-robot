@@ -13,18 +13,23 @@ def clamped(value, limit=1):
     return max(-1 * limit, min(limit, value))
 
 
+def cutoff(value, limit):
+    return value if abs(value) >= limit else math.copysign(limit, value) if abs(value) > 0 else 0
+
+
 def calculate_drive(speed, heading, fwd_safe, fwd_proximity):
     if speed > 0:
-        slow = fwd_proximity if fwd_safe else 0
+        slow = 0 if not fwd_safe else 1 if fwd_proximity > 0.5 else fwd_proximity
         left = slow * (speed if heading < 0 else math.sqrt(heading ** 2 + speed ** 2))
         right = slow * (speed if heading > 0 else math.sqrt(heading ** 2 + speed ** 2))
     elif speed == 0:
         if fwd_safe:
             left = 0 if heading < 0 else heading
-            right = 0 if heading > 0 else heading
+            right = 0 if heading > 0 else -1 * heading
         else:
-            right = 0 if heading < 0 else -1 * heading
-            left = 0 if heading > 0 else -1 * heading
+            left = heading if heading < 0 else 0
+            right = -1 * heading if heading > 0 else 0
+
     else:
         right = speed if heading < 0 else -1 * math.sqrt(heading ** 2 + speed ** 2)
         left = speed if heading > 0 else -1 * math.sqrt(heading ** 2 + speed ** 2)
@@ -49,7 +54,7 @@ class RobotControl:
         self.heading = 0
         self.bias = bias
         self.bias_adjust = 1 / 32
-        self.sensitivity = 1 / 16
+        self.sensitivity = 3 / 16
         self.slow = 1 / 8
         self.left = False
         self.right = False
@@ -83,7 +88,9 @@ class RobotControl:
             else:
                 self.reset()
             left, right = adjust_bias(*calculate_drive(self.speed, self.heading, fwd_safe, fwd_proximity), self.bias)
-            print(f'left: {left}, right: {right}')
+            left = cutoff(left, self.sensitivity)
+            right = cutoff(right, self.sensitivity)
+            print(f'left: {left:.4f}, right: {right:.4f}, Safe: {fwd_safe}, Distance: {fwd_proximity:.4f}')
             yield left, right
 
     def reset(self):
@@ -95,7 +102,6 @@ class RobotControl:
         self.heading = 0
 
     def _update_state(self, command):
-
         if command is None:
             self.reset()
         else:
