@@ -2,6 +2,7 @@
   <dictionary name="pi">
     <words>
       <w>bluetooth</w>
+      <w>gpio</w>
       <w>libevdev</w>
       <w>raspbian</w>
     </words>

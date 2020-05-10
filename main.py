@@ -2,25 +2,23 @@
 """A module having the Main entry point for the robot
 
 Usage:
-    python3 main.py <device path = /dev/input/eventX>
+    python3 main.py <device path = /dev/input/eventX> [-z|--zero]
 """
-import sys
-import time
 import argparse
-
-from gpiozero.pins.pigpio import PiGPIOFactory
-from gpiozero.pins.native import NativeFactory
-
-from core.robot_control import RobotControl
-from core.events import EventSource
-from sensors.distance import ProximitySensor
-from utils.utilities import print_event
-from gpiozero import Robot
+import time
 from signal import pause
 
+from gpiozero import Robot
+from gpiozero.pins.pigpio import PiGPIOFactory
 
-def event_printer(args):
-    path = args[1]
+from core.events import EventSource
+from core.robot_control import RobotControl
+from sensors.distance import ProximitySensor
+from utils.utilities import print_event
+
+
+def event_printer(config):
+    path = config.device
     es = EventSource(path)
     while True:
         try:
@@ -37,13 +35,11 @@ def event_printer(args):
             print(f"{type(ex)}: {ex}")
 
 
-def main(args):
-    path = args.device
-    onZero = args.zero
-    pin_factory = PiGPIOFactory if onZero else NativeFactory()
+def main(config):
+    pin_factory = PiGPIOFactory() if config.zero else None
     proximity = ProximitySensor(pin_factory=pin_factory)
     robot = Robot(left=(10, 9), right=(8, 7), pin_factory=pin_factory)
-    rc = RobotControl(path, fwd_sensor=proximity)
+    rc = RobotControl(config.device, fwd_sensor=proximity)
     robot.source = rc()
     pause()
 
@@ -54,4 +50,11 @@ if __name__ == "__main__":
                                        'X is an integer. See the readme for help finding this value.')
     parser.add_argument('-z', '--zero', action='store_true', default=False,
                         help='The code is running on a piZero use the PiGPIO pin factory for improved performance.')
-    main(parser.parse_args())
+    args = parser.parse_args()
+    if args.zero:
+        import pigpio
+        pi = pigpio.pi()
+        if not pi.connected:
+            print('Requested PiGPIO pin factory but PiGPIO daemon not started exiting...')
+            exit(1)
+    main(args)

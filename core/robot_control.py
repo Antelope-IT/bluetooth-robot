@@ -13,10 +13,18 @@ def clamped(value, limit=1):
     return max(-1 * limit, min(limit, value))
 
 
-def calculate_drive(speed, heading):
-    if speed >= 0:
-        left = speed if heading < 0 else math.sqrt(heading ** 2 + speed ** 2)
-        right = speed if heading > 0 else math.sqrt(heading ** 2 + speed ** 2)
+def calculate_drive(speed, heading, fwd_safe, fwd_proximity):
+    if speed > 0:
+        slow = fwd_proximity if fwd_safe else 0
+        left = slow * (speed if heading < 0 else math.sqrt(heading ** 2 + speed ** 2))
+        right = slow * (speed if heading > 0 else math.sqrt(heading ** 2 + speed ** 2))
+    elif speed == 0:
+        if fwd_safe:
+            left = 0 if heading < 0 else heading
+            right = 0 if heading > 0 else heading
+        else:
+            right = 0 if heading < 0 else -1 * heading
+            left = 0 if heading > 0 else -1 * heading
     else:
         right = speed if heading < 0 else -1 * math.sqrt(heading ** 2 + speed ** 2)
         left = speed if heading > 0 else -1 * math.sqrt(heading ** 2 + speed ** 2)
@@ -50,17 +58,22 @@ class RobotControl:
 
     def __call__(self, *args, **kwargs):
         while True:
+            if self.fwd_sensor is not None:
+                fwd_safe, fwd_proximity = self.fwd_sensor.proximity()
+            else:
+                fwd_safe = True
+                fwd_proximity = 1
+
             if self.eventSource.is_connected:
                 try:
                     ev = next(self.eventSource.events())
                     if ev is not None:
                         command = self._decode_event(ev)
-                        self._update_state(command)
                     else:
                         command = Command(self.forward, self.reverse, self.left, self.right)
-                        self._update_state(command)
-                    safe_fwd = True if self.fwd_sensor is None else self.fwd_sensor.safe()
-                    if self.speed > 0 and not safe_fwd:
+                    self._update_state(command)
+
+                    if self.speed > 0 and not fwd_safe:
                         self.reset()
                 except KeyboardInterrupt:
                     pass
@@ -69,8 +82,7 @@ class RobotControl:
                     self.reset()
             else:
                 self.reset()
-
-            left, right = adjust_bias(*calculate_drive(self.speed, self.heading), self.bias)
+            left, right = adjust_bias(*calculate_drive(self.speed, self.heading, fwd_safe, fwd_proximity), self.bias)
             print(f'left: {left}, right: {right}')
             yield left, right
 
@@ -92,16 +104,16 @@ class RobotControl:
             heading_increment = abs(self.heading) * self.sensitivity if abs(
                 self.heading) > self.sensitivity else self.sensitivity
             if command.forward or command.reverse:
-                self.speed += speed_increment if command.forward else 0
-                self.speed -= speed_increment if command.reverse else 0
+                self.speed += speed_increment if command.forward and self.speed < 1 else 0
+                self.speed -= speed_increment if command.reverse and self.speed > -1 else 0
             else:
                 self.speed -= self.speed * self.slow
                 if abs(self.speed) < self.sensitivity:
                     self.speed = 0
 
             if command.left_turn or command.right_turn:
-                self.heading += heading_increment if command.right_turn else 0
-                self.heading -= heading_increment if command.left_turn else 0
+                self.heading += heading_increment if command.right_turn and self.heading < 1 else 0
+                self.heading -= heading_increment if command.left_turn and self.heading > -1 else 0
             else:
                 self.heading -= self.heading * self.slow
                 if abs(self.heading) < self.sensitivity:

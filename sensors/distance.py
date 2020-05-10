@@ -14,10 +14,12 @@ class ProximitySensor:
         pin_factory: The pin factory to use for the GPIOZero device consider using the PiGPIO factory
                      when running on a PiZero for increased performance.
     """
+
     def __init__(self, safe_distance=5, send=pinTrigger, receive=pinEcho, pin_factory=None):
-        self.sensor = DistanceSensor(echo=receive, trigger=send, pin_factory=pin_factory)
+        self.sensor = DistanceSensor(echo=receive, trigger=send, max_distance=0.5, pin_factory=pin_factory)
         self.limitDistance = safe_distance
 
-    def safe(self):
+    def proximity(self):
         # Returns True if the sensors measured distance is greater than the configured safe distance
-        return True if self.sensor.distance * 10 > self.limitDistance else False
+        distance = self.sensor.distance * 50
+        return True if distance * 50 > self.limitDistance else False, distance
