@@ -1,6 +1,6 @@
 """ A module containing The EventSource class
 
-Ussage:
+Usage:
     None.
 """
 import libevdev

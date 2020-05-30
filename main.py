@@ -14,6 +14,7 @@ from gpiozero.pins.pigpio import PiGPIOFactory
 from core.events import EventSource
 from core.robot_control import RobotControl
 from sensors.distance import ProximitySensor
+from sensors.shutdown import ShutdownSensor
 from utils.utilities import print_event
 
 
@@ -39,8 +40,11 @@ def main(config):
     try:
         pin_factory = PiGPIOFactory() if config.zero else None
         proximity = ProximitySensor(safe_distance=10, pin_factory=pin_factory)
+        shutdown_control = ShutdownSensor(pin_factory=pin_factory)
         robot = Robot(left=(10, 9), right=(8, 7), pin_factory=pin_factory)
         rc = RobotControl(config.device, fwd_sensor=proximity)
+        shutdown_control.subscribe(robot.stop)
+        shutdown_control.subscribe(robot.close)
         robot.source = rc()
         pause()
     except KeyboardInterrupt:
