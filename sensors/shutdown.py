@@ -11,7 +11,7 @@ def shutdown():
 class ShutdownSensor:
 
     def __init__(self, pin_trigger=pinShutdown, trigger_time=2,  pin_factory=None):
-        self.callbacks = [];
+        self.callbacks = []
         self.sensor = Button(pin_trigger, hold_time=trigger_time, pin_factory=pin_factory)
         self.sensor.when_held = self.safe_shutdown
 
