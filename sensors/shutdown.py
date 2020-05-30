@@ -1,7 +1,7 @@
 from gpiozero import Button
 from subprocess import check_call
 
-pinShutdown = 13
+pinShutdown = 27
 
 
 def shutdown():
