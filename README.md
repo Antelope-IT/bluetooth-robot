@@ -46,10 +46,13 @@ Features and functionality are limited at the moment for obvious reasons - its n
 * When running (and the controller is connected).
   - It ignores when CTRL-C is pressed.
   - It updates the state of the robot control with keypad events from the controller.
-  - The control state is surfaced as an iterable that can be queried by the GPIZero Robot device
+  - The control state is surfaced as an iterable that can be queried by the GPIZero Robot device.
 
 * When run without a device id.
   - It prints usage help to the console.
+  
+* Shutdown button 
+  - Robot (script and OS) can be shutdown by pressing a button connected between GND and GPIO27 for 2 sec. 
  
 Testing
 =======
@@ -76,6 +79,27 @@ To install the python libevdev library use:
 sudo pip3 install libevdev
 ```
 
+Optional Pre-Requisites
+-----------------------
+
+The robot uses an ultrasonic distance sensor, when running on a Pi Zero the accuracy and performance of this sensor can be improved by using the `pigpio` pin factory. The robot can be configured to use this pin factory by passing -z or --zero on the command line. However for this to work the `pigpiod` daemon needs to be running before the application starts.
+
+If the library is not present on you system (Raspberry Pi OS Lite) you can install it with the following command
+```
+$ sudo apt install pigpio
+
+```
+To automate the daemon so that it starts when the OS starts run (to disable it again switch `enable` for `disable`.)
+```
+$ sudo systemctl enable pigpiod
+
+```
+To run the daemon once use:
+```
+$ sudo systemctl start pigpiod
+
+``` 
+
 Usage
 -----
 Run the module with the command below replacing 'eventX' with the id of the handler you found above.
@@ -84,3 +108,44 @@ Run the module with the command below replacing 'eventX' with the id of the hand
 python3 main.py /dev/input/eventX
 
 ```
+
+A full description of the command line options available can be seen  by running 
+
+```
+python3 main.py -h
+
+```
+
+Setup For Autorun on Startup
+
+There are many ways to implement this; I have selected the the `systemd` method:
+
+1. In `/lib/systemd/system/` create a file robot.service 
+```
+sudo nano /lib/systemd/system/robot.service
+```
+2. Add the following content:
+```
+ [Unit]
+ Description=Bluetooth controlled robot service
+ After=multi-user.target
+
+ [Service]
+ Type=idle
+ ExecStart=/usr/bin/python3 /home/pi/<path to project>/main.py /dev/input/event0 -z
+
+ [Install]
+ WantedBy=multi-user.target
+
+```
+3. Save the file and set the following permissions.
+```
+sudo chmod 644 /lib/systemd/system/robot.service
+```
+4. Configure `systemd` to run the script at start up.
+```
+sudo systemctl daemon-reload
+sudo systemctl enable robot.service
+```
+
+5. reboot to see your changes take effect.
