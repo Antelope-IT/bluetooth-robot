@@ -6,7 +6,7 @@ In addition to the CamJam kit this project also uses an [8BitDo Zero 2](https://
 
 Health Warning
 ==============
-Please be aware that this project is still a work in progress and is incomplete - these are just first commits. As such, its not finished and therefore not fully implemented, and what code there is here probably doesn't all work. Worse than that I'm just learning Python so I'm not even an expert. That all said, you are welcome to use this code, borrow from it, and to learn from my mistakes, however I make no guarantees as to its functionality or suitability. You can't say I didn't warn you.
+Please be aware that this project is a work in progress. As such, its not finished in so far as while I am happy with the current functionality of the robot(buggy) and the ability to control it with the 8BitDo controller I am sure the code could be improved and simplified. That all said, you are welcome to use this code, borrow from it, and to learn from my mistakes, however I make no guarantees as to its functionality or suitability. As always, it works for me but YMMV.
 
 Status
 ======
